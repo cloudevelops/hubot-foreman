@@ -7,6 +7,7 @@
 # Configuration:
 # FOREMAN_AUTH (e.g. user:password for Basic Auth)
 # FOREMAN_URL (e.g. https://foreman.example.com)
+# NODE_TLS_REJECT_UNAUTHORIZED - Should you need to connect to a self-signed Foreman
 #
 # Commands:
 #
@@ -21,10 +22,10 @@ foreman_auth = process.env.FOREMAN_AUTH
 
 module.exports = (robot) ->
 
-  robot.hear /foreman (s|search) (\w+)/i, (msg) ->
+  robot.hear /foreman (s|search) (\w+(\-\w+)*)/i, (msg) ->
     foremansearch msg
 
-  robot.hear /foreman (c|classes) (\w+)/i, (msg) ->
+  robot.hear /foreman (c|classes) (\w+(\-\w+)*)/i, (msg) ->
     foremanpuppetclasses msg
 
 foremansearch = (msg, query, cb) ->
@@ -47,7 +48,7 @@ foremansearch = (msg, query, cb) ->
          object = body["results"][i]
          response += "#{i + 1}. #{object['name']}  id: #{object['id']}\n"
          response += "#{process.env.FOREMAN_URL}/hosts/#{object['name']}\n"
-         response += "#{process.env.FOREMAN_URL}/hosts/#{object['name']}/reports/last\n"
+         response += "#{process.env.FOREMAN_URL}/hosts/#{object['name']}/config_reports/last\n"
          i++
        msg.send response
 
